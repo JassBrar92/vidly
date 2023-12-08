@@ -1,3 +1,4 @@
+const err=require('./middleware/error');
 const Joi=require('joi');
 Joi.objectId=require('joi-objectid')(Joi);
 const mongoose = require('mongoose'); 
@@ -9,6 +10,7 @@ const users=require('./routes/users');
 const auth=require('./routes/auth');
 const config=require('config');
 const express = require('express');
+const { error } = require('joi/lib/types/lazy');
 const app = express();
 if(!config.get('jwtPrivateKey')){
   console.error('Fatal Error: jwtPrivateKey is not defined.');
@@ -24,5 +26,6 @@ app.use('/api/movies', movies);
 app.use('/api/rentals',rentals);
 app.use('/api/users',users);
 app.use('/api/auth',auth);
+app.use(err);
 const port = process.env.PORT || 3000;
 app.listen(port, () => console.log(`Listening on port ${port}...`));
