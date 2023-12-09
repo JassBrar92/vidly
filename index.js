@@ -1,3 +1,4 @@
+const winston=require('winston');
 const err=require('./middleware/error');
 const Joi=require('joi');
 Joi.objectId=require('joi-objectid')(Joi);
@@ -12,6 +13,7 @@ const config=require('config');
 const express = require('express');
 const { error } = require('joi/lib/types/lazy');
 const app = express();
+winston.add(winston.transports.File,{filename:'logfile.log'});
 if(!config.get('jwtPrivateKey')){
   console.error('Fatal Error: jwtPrivateKey is not defined.');
   process.exit(1);
