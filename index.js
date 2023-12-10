@@ -1,27 +1,10 @@
-const winston=require('winston');
-//require('winston-mongodb');
 const Joi=require('joi');
 Joi.objectId=require('joi-objectid')(Joi); 
 const config=require('config');
 const express = require('express');
-const { error } = require('joi/lib/types/lazy');
 const app = express();
 require('./startup/routes')(app);
 require('./startup/db')();
-process.on('uncaughtException',(ex)=>{
-  console.log('Uncaught Exception');
-  winston.error(ex.message,ex);
-});
-process.on('unhandledRejection',(ex)=>{
-  winston.error(ex.message,ex);
-  throw ex;
-});
-//winston.handleExceptions(new winston.transports.File({filename:'logfile.log'}));
-winston.add(winston.transports.File,{filename:'logfile.log'});
-//winston.add(winston.transports.MongoDB,{db:'mongodb://localhost:vidly'});
-//throw new Error("Something failed while startup");
-//const p=Promise.reject(new Error("Unhandle promise rejection"));
-//p.then(()=>console.log('done'));
 if(!config.get('jwtPrivateKey')){
   console.error('Fatal Error: jwtPrivateKey is not defined.');
   process.exit(1);
