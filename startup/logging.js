@@ -5,7 +5,7 @@ module.exports=function(){
     console.log('Uncaught Exception');
     winston.error(ex.message,ex);
   });*/
-  winston.handleExceptions(new winston.transports.File({filename:'logfile.log'}));
+  winston.handleExceptions(new winston.transports.Console({colorize:true,prettyPrint:true}),new winston.transports.File({filename:'logfile.log'}));
   process.on('unhandledRejection',(ex)=>{
     //winston.error(ex.message,ex);
     throw ex;
