@@ -44,6 +44,10 @@ router.delete('/:id',[auth,admin] ,asyncMiddleware(async (req, res) => {
 }));
 
 router.get('/:id', asyncMiddleware(async (req, res) => {
+  if(!mongoose.Types.ObjectId.isValid(req.params.id))
+  {
+    return res.status(404).send('Invalid Id');
+  }
   const genre = await Genre.findById(req.params.id);
 
   if (!genre) return res.status(404).send('The genre with the given ID was not found.');
