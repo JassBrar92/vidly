@@ -1,3 +1,4 @@
+const validateObjectId=require('../middleware/validatingObjectId');
 const asyncMiddleware=require('../middleware/async');
 const auth=require('../middleware/auth');
 const admin=require('../middleware/admin');
@@ -43,11 +44,7 @@ router.delete('/:id',[auth,admin] ,asyncMiddleware(async (req, res) => {
   res.send(genre);
 }));
 
-router.get('/:id', asyncMiddleware(async (req, res) => {
-  if(!mongoose.Types.ObjectId.isValid(req.params.id))
-  {
-    return res.status(404).send('Invalid Id');
-  }
+router.get('/:id', validateObjectId,asyncMiddleware(async (req, res) => {
   const genre = await Genre.findById(req.params.id);
 
   if (!genre) return res.status(404).send('The genre with the given ID was not found.');
