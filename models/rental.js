@@ -1,59 +1,71 @@
 const mongoose=require('mongoose');
 const Joi=require('joi');
-const Rental=mongoose.model('Rentals',new mongoose.Schema({
-   customer:{
-    type:new mongoose.Schema({
-    name:{
-    type:String,
-    required:true,
-    minlength:5,
-    maxlength:255,
-    },
-    isGold:{
-      type:Boolean,
-      default:true
-    },
-    phone:{
-      type:String,
-      required:true,
-      minlength:5,
-      maxlength:15
-    }
-  }),
-  required:true
-},
-   movie:{
-    type:new mongoose.Schema({
-    title:{
+const moment=require('moment');
+const rentalSchema=new mongoose.Schema({
+  customer:{
+   type:new mongoose.Schema({
+   name:{
+   type:String,
+   required:true,
+   minlength:5,
+   maxlength:255,
+   },
+   isGold:{
+     type:Boolean,
+     default:true
+   },
+   phone:{
      type:String,
      required:true,
-     trim:true,
      minlength:5,
-     maxlength:255
-    },
-    dailyRentalRate:{
-      type:String,
-      required:true,
-      min:0,
-      max:255
-    }
-   }),
-   required:true
-  },
-  dateOut:{
-    type:Date,
+     maxlength:15
+   }
+ }),
+ required:true
+},
+  movie:{
+   type:new mongoose.Schema({
+   title:{
+    type:String,
     required:true,
-    default:Date.now
-  },
-  dateReturned:{
-    type:Date
-  },
-  retalFee:{
-    type:Number,
-    min:0
-  }
-}));
-
+    trim:true,
+    minlength:5,
+    maxlength:255
+   },
+   dailyRentalRate:{
+     type:String,
+     required:true,
+     min:0,
+     max:255
+   }
+  }),
+  required:true
+ },
+ dateOut:{
+   type:Date,
+   required:true,
+   default:Date.now
+ },
+ dateReturned:{
+   type:Date
+ },
+ rentalFee:{
+   type:Number,
+   min:0
+ }
+});
+rentalSchema.statics.lookup=function(customerId,movieId){
+  return this.findOne({
+    'customer._id':customerId,
+    'movie._id':movieId,
+  });
+}
+rentalSchema.methods.return=function(){
+  this.dateReturned=new Date();
+  
+  this.rentalFee=moment().diff(this.dateOut,"days")*this.movie.dailyRentalRate;
+}
+const Rental=mongoose.model('Rentals',rentalSchema);
 function validateRental(rental){
   const schema={
     customerId:Joi.objectId().required(),
